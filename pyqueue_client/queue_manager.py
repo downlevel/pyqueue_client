@@ -45,9 +45,9 @@ class PyQueue:
         # Local queue implementation
         item_queue = {}  # Initialize message queue
         if item_id is None:
-            item_queue["Id"] = message.get("id", str(uuid.uuid4()))  # Unique ID
+            item_queue["id"] = message.get("id", str(uuid.uuid4()))  # Unique id
         else:
-            item_queue["Id"] = item_id
+            item_queue["id"] = item_id
 
         item_queue["timestamp"] = datetime.utcnow().isoformat()  # Add timestamp
 
@@ -63,8 +63,8 @@ class PyQueue:
             queue = []  # Initialize empty queue on error
 
         # Check if message already exists
-        item_id = item_queue["Id"]
-        if any(item["Id"] == item_id for item in queue):
+        item_id = item_queue["id"]
+        if any(item["id"] == item_id for item in queue):
             return
 
         item_queue["message_body"] = message  
@@ -74,7 +74,7 @@ class PyQueue:
         with open(self.queue_file, "w") as f:
             json.dump(queue, f, indent=4)
 
-        print(f"✅ Message added: {item_queue['Id']}")
+        print(f"✅ Message added: {item_queue['id']}")
 
     def get_messages(self):
         """Returns all messages from the queue"""
@@ -116,7 +116,7 @@ class PyQueue:
         with open(self.queue_file, "r") as f:
             queue = json.load(f)
 
-        new_queue = [item for item in queue if item["Id"] != item_id]
+        new_queue = [item for item in queue if item["id"] != item_id]
 
         with open(self.queue_file, "w") as f:
             json.dump(new_queue, f, indent=4)
@@ -132,7 +132,7 @@ class PyQueue:
             queue = json.load(f)
 
         for item in queue:
-            if item["Id"] == item_id:
+            if item["id"] == item_id:
                 item["timestamp"] = datetime.utcnow().isoformat()  # Add timestamp
                 item["message_body"] = new_message
                 break

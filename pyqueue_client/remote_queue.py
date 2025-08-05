@@ -37,10 +37,9 @@ class RemoteQueueClient:
                 response = self.session.put(url, json=data, timeout=self.timeout)
             else:
                 raise ValueError(f"Unsupported HTTP method: {method}")
-                
             response.raise_for_status()
             return response.json() if response.content else {}
-              except requests.RequestException as e:
+        except requests.RequestException as e:
             raise ConnectionError(f"Failed to connect to PyQueue server: {e}")
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON response from server: {e}")

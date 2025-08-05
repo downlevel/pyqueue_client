@@ -1,6 +1,6 @@
-from pyqueue_client import PyQueueClient
+from pyqueue_client import PyQueue
 
-notifier = PyQueueClient(queue_file="queue.json")
+notifier = PyQueue(queue_file="queue.json")
 
 notifier.add_message(message={
         "message_field_1": "Message Field Value 1",
