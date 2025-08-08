@@ -52,11 +52,20 @@ notifier.clear_queue()
 ```python
 from pyqueue_client import PyQueue
 
-# Initialize remote queue client
+# Initialize remote queue client (without authentication)
 notifier = PyQueue(
     queue_type="remote",
     server_url="http://localhost:8000",
     queue_name="my-queue",
+    timeout=30
+)
+
+# Initialize remote queue client with API key authentication
+notifier = PyQueue(
+    queue_type="remote",
+    server_url="https://api.pyqueue.com",
+    queue_name="my-queue",
+    api_key="your-api-key-here",
     timeout=30
 )
 
@@ -92,11 +101,12 @@ if notifier.health_check():
 import time
 from pyqueue_client import PyQueue
 
-# Consumer for processing messages
+# Consumer for processing messages (with API key)
 consumer = PyQueue(
     queue_type="remote",
-    server_url="http://localhost:8000",
-    queue_name="task-queue"
+    server_url="https://api.pyqueue.com",
+    queue_name="task-queue",
+    api_key="your-api-key-here"
 )
 
 def process_message(message):
@@ -177,11 +187,20 @@ while True:
 # Local queue
 PyQueue(queue_type="local", queue_file="queue.json")
 
-# Remote queue
+# Remote queue (without authentication)
 PyQueue(
     queue_type="remote", 
     server_url="http://localhost:8000",
     queue_name="default",
+    timeout=30
+)
+
+# Remote queue (with API key authentication)
+PyQueue(
+    queue_type="remote", 
+    server_url="https://api.pyqueue.com",
+    queue_name="default",
+    api_key="your-api-key-here",
     timeout=30
 )
 ```
