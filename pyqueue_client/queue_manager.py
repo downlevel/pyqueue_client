@@ -9,7 +9,7 @@ from .remote_queue import RemoteQueueClient
 QUEUE_FILE = os.getenv("QUEUE_FILE_PATH", "queue.json")
 
 class PyQueue:
-    def __init__(self, queue_file=QUEUE_FILE, queue_type="local", server_url=None, queue_name="default", timeout=30):
+    def __init__(self, queue_file=QUEUE_FILE, queue_type="local", server_url=None, api_key=None, queue_name="default", timeout=30):
         """
         Initialize PyQueue client
         
@@ -32,7 +32,7 @@ class PyQueue:
         elif self.queue_type == "remote":
             if not server_url:
                 raise ValueError("server_url is required when queue_type='remote'")
-            self.remote_client = RemoteQueueClient(server_url, queue_name, timeout)
+            self.remote_client = RemoteQueueClient(server_url, queue_name, api_key, timeout)
             
         else:
             raise ValueError("queue_type must be 'local' or 'remote'")

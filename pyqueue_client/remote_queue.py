@@ -7,8 +7,8 @@ from typing import Dict, List, Optional
 
 class RemoteQueueClient:
     """Client for interacting with remote PyQueue server"""
-    
-    def __init__(self, server_url: str, queue_name: str = "default", timeout: int = 30):
+
+    def __init__(self, server_url: str, queue_name: str = "default", api_key: str = None, timeout: int = 30):
         """
         Initialize remote queue client
         
@@ -21,7 +21,9 @@ class RemoteQueueClient:
         self.queue_name = queue_name
         self.timeout = timeout
         self.session = requests.Session()
-        
+        if api_key:
+            self.session.headers.update({"X-API-Key": api_key})
+
     def _make_request(self, method: str, endpoint: str, data: Optional[Dict] = None) -> Dict:
         """Make HTTP request to the server"""
         url = f"{self.server_url}/api/v1/queues/{self.queue_name}{endpoint}"
