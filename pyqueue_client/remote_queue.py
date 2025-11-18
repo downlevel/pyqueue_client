@@ -40,6 +40,11 @@ class RemoteQueueClient:
             else:
                 raise ValueError(f"Unsupported HTTP method: {method}")
             response.raise_for_status()
+            
+            print(f"🔗 {method} {url} - Status: {response.status_code}")
+            print(f"📥 Response: {response.text}")
+            print(f"📤 Data: {data}")
+
             return response.json() if response.content else {}
         except requests.RequestException as e:
             raise ConnectionError(f"Failed to connect to PyQueue server: {e}")
