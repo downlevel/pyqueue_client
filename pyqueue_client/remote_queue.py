@@ -64,6 +64,8 @@ class RemoteQueueClient:
             "timestamp": datetime.utcnow().isoformat()
         }
         
+        self.logger.debug(f"📤 Payload being sent: {json.dumps(payload, indent=2, ensure_ascii=False)}")
+        
         response = self._make_request("POST", "/messages", payload)
         self.logger.info(f"✅ Message added to remote queue: {item_id}")
         return response.get("id", item_id)
