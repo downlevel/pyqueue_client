@@ -53,7 +53,7 @@ class RemoteQueueClient:
             
         payload = {
             "id": item_id,
-            "message": message,
+            "message_body": message,
             "timestamp": datetime.utcnow().isoformat()
         }
         
@@ -93,7 +93,7 @@ class RemoteQueueClient:
     def update_message(self, item_id: str, new_message: Dict) -> bool:
         """Update a message in the remote queue"""
         payload = {
-            "message": new_message,
+            "message_body": new_message,
             "timestamp": datetime.utcnow().isoformat()
         }
         endpoint = f"/messages/by-id/{item_id}"
