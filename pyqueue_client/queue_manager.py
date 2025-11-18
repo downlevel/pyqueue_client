@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import uuid
 from datetime import datetime
@@ -21,6 +22,7 @@ class PyQueue:
             timeout: Request timeout for remote operations
         """
         self.queue_type = queue_type.lower()
+        self.logger = logging.getLogger(__name__)
         
         if self.queue_type == "local":
             self.queue_file = queue_file
@@ -74,7 +76,7 @@ class PyQueue:
         with open(self.queue_file, "w") as f:
             json.dump(queue, f, indent=4)
 
-        print(f"✅ Message added: {item_queue['id']}")
+        self.logger.info(f"✅ Message added: {item_queue['id']}")
 
     def get_messages(self):
         """Returns all messages from the queue"""
@@ -105,7 +107,7 @@ class PyQueue:
         # Local queue implementation
         with open(self.queue_file, "w") as f:
             json.dump([], f)
-        print("🚀 Queue cleared!")
+        self.logger.info("🚀 Queue cleared!")
 
     def remove_message(self, item_id):
         """Removes a message from the queue"""
@@ -120,7 +122,7 @@ class PyQueue:
 
         with open(self.queue_file, "w") as f:
             json.dump(new_queue, f, indent=4)
-        print(f"🗑 Message removed: {item_id}")
+        self.logger.info(f"🗑 Message removed: {item_id}")
 
     def update_message(self, item_id, new_message):
         """Updates a message in the queue"""
@@ -139,7 +141,7 @@ class PyQueue:
 
         with open(self.queue_file, "w") as f:
             json.dump(queue, f, indent=4)
-        print(f"🔄 Message updated: {new_message}")
+        self.logger.info(f"🔄 Message updated: {new_message}")
     
     def delete_message(self, receipt_handle: str):
         """

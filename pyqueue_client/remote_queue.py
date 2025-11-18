@@ -1,4 +1,5 @@
 import json
+import logging
 import uuid
 import requests
 from datetime import datetime
@@ -21,6 +22,7 @@ class RemoteQueueClient:
         self.queue_name = queue_name
         self.timeout = timeout
         self.session = requests.Session()
+        self.logger = logging.getLogger(__name__)
         if api_key:
             self.session.headers.update({"X-API-Key": api_key})
 
@@ -41,9 +43,9 @@ class RemoteQueueClient:
                 raise ValueError(f"Unsupported HTTP method: {method}")
             response.raise_for_status()
             
-            print(f"🔗 {method} {url} - Status: {response.status_code}")
-            print(f"📥 Response: {response.text}")
-            print(f"📤 Data: {data}")
+            self.logger.debug(f"🔗 {method} {url} - Status: {response.status_code}")
+            self.logger.debug(f"📥 Response: {response.text}")
+            self.logger.debug(f"📤 Data: {data}")
 
             return response.json() if response.content else {}
         except requests.RequestException as e:
@@ -63,7 +65,7 @@ class RemoteQueueClient:
         }
         
         response = self._make_request("POST", "/messages", payload)
-        print(f"✅ Message added to remote queue: {item_id}")
+        self.logger.info(f"✅ Message added to remote queue: {item_id}")
         return response.get("id", item_id)
     
     def get_messages(self, max_messages: int = 10) -> List[Dict]:
@@ -85,14 +87,14 @@ class RemoteQueueClient:
         """Delete a message using its receipt handle"""
         endpoint = f"/messages/{receipt_handle}"
         self._make_request("DELETE", endpoint)
-        print(f"🗑 Message deleted from remote queue: {receipt_handle}")
+        self.logger.info(f"🗑 Message deleted from remote queue: {receipt_handle}")
         return True
     
     def remove_message(self, item_id: str) -> bool:
         """Remove a message by its ID (for compatibility with local queue)"""
         endpoint = f"/messages/by-id/{item_id}"
         self._make_request("DELETE", endpoint)
-        print(f"🗑 Message removed from remote queue: {item_id}")
+        self.logger.info(f"🗑 Message removed from remote queue: {item_id}")
         return True
     
     def update_message(self, item_id: str, new_message: Dict) -> bool:
@@ -103,13 +105,13 @@ class RemoteQueueClient:
         }
         endpoint = f"/messages/by-id/{item_id}"
         self._make_request("PUT", endpoint, payload)
-        print(f"🔄 Message updated in remote queue: {item_id}")
+        self.logger.info(f"🔄 Message updated in remote queue: {item_id}")
         return True
     
     def clear_queue(self) -> bool:
         """Clear all messages from the remote queue"""
         self._make_request("DELETE", "/messages")
-        print("🚀 Remote queue cleared!")
+        self.logger.info("🚀 Remote queue cleared!")
         return True
     
     def get_queue_info(self) -> Dict:
