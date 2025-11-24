@@ -87,17 +87,29 @@ class PyQueue:
         with open(self.queue_file, "r") as f:
             return json.load(f)
     
-    def receive_messages(self, max_messages=10, visibility_timeout=30):
+    def receive_messages(self, max_messages=10, visibility_timeout=30, delete_after_receive=False, only_new=False):
         """
         Receive messages from the queue (SQS-style)
-        For local queues, this is the same as get_messages
-        For remote queues, messages become temporarily invisible
+        For remote queues, messages become temporarily invisible or are deleted immediately.
+        For local queues, optionally delete the messages after reading.
+        The only_new flag is only supported for remote queues.
         """
         if self.queue_type == "remote":
-            return self.remote_client.receive_messages(max_messages, visibility_timeout)
+            return self.remote_client.receive_messages(max_messages, visibility_timeout, delete_after_receive, only_new)
             
-        # Local queue implementation - just return messages
-        return self.get_messages()[:max_messages]
+        # Local queue implementation
+        if only_new:
+            self.logger.warning("only_new flag is not supported for local queues; returning all messages.")
+        messages = self.get_messages()
+        selected_messages = messages[:max_messages]
+
+        if delete_after_receive and selected_messages:
+            remaining_messages = messages[max_messages:]
+            with open(self.queue_file, "w") as f:
+                json.dump(remaining_messages, f, indent=4)
+            self.logger.info(f"🗑 Deleted {len(selected_messages)} message(s) after receive")
+
+        return selected_messages
 
     def clear_queue(self):
         """Clears the queue"""

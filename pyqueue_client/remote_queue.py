@@ -76,12 +76,23 @@ class RemoteQueueClient:
         response = self._make_request("GET", endpoint)
         return response.get("messages", [])
     
-    def receive_messages(self, max_messages: int = 10, visibility_timeout: int = 30) -> List[Dict]:
+    def receive_messages(self, max_messages: int = 10, visibility_timeout: int = 30, delete_after_receive: bool = False, only_new: bool = False) -> List[Dict]:
         """
         Receive messages from the queue (like SQS ReceiveMessage)
-        Messages become invisible for the specified timeout period
+        Messages become invisible for the specified timeout period unless deleted immediately.
+        Optionally filter only messages not delivered before.
         """
-        endpoint = f"/messages/receive?max_messages={max_messages}&visibility_timeout={visibility_timeout}"
+        query_parts = [
+            f"max_messages={max_messages}",
+            f"visibility_timeout={visibility_timeout}"
+        ]
+        if delete_after_receive:
+            query_parts.append("delete_after_receive=true")
+        if only_new:
+            query_parts.append("only_new=true")
+
+        endpoint = f"/messages/receive?{'&'.join(query_parts)}"
+        self.logger.debug(f"📡 Receive endpoint: {endpoint}")
         response = self._make_request("POST", endpoint)
         return response.get("messages", [])
     
