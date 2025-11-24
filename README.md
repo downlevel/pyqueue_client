@@ -1,6 +1,6 @@
 # PyQueue Client
 
-A Python library for adding messages to PyQueue with support for both local JSON files and remote PyQueue servers.
+A Python library for adding messages to PyQueue with support for both local JSON files and remote PyQueue servers. The client now provides structured logging and advanced receive options such as deleting messages on receipt and fetching only unseen items.
 
 ## Installation
 
@@ -78,7 +78,12 @@ notifier.add_message({
 })
 
 # Receive messages (SQS-style with visibility timeout)
-messages = notifier.receive_messages(max_messages=10, visibility_timeout=30)
+messages = notifier.receive_messages(
+    max_messages=10,
+    visibility_timeout=30,
+    delete_after_receive=False,
+    only_new=False,
+)
 for message in messages:
     # Process message
     print(f"Processing message: {message['Id']}")
@@ -126,7 +131,7 @@ while True:
             try:
                 # Process the message
                 if process_message(message):
-                    # Delete message after successful processing
+                    # Delete message after successful processing (explicit delete)
                     consumer.delete_message(message['ReceiptHandle'])
                     print(f"✅ Message {message['Id']} processed successfully")
                 else:
@@ -145,6 +150,30 @@ while True:
     except Exception as e:
         print(f"Consumer error: {e}")
         time.sleep(10)  # Wait before retrying
+    ```
+
+    ```python
+# Alternative: automatically delete messages as they are received
+messages = consumer.receive_messages(
+    max_messages=5,
+    visibility_timeout=60,
+    delete_after_receive=True,
+    only_new=True,
+)
+
+    # Note: only_new applies to remote queues. For local queues the flag is ignored.
+```
+
+### Logging
+
+The client uses the standard `logging` module. Enable the desired level in your application:
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("pyqueue_client").setLevel(logging.DEBUG)
+```
 ```
 
 ## ✨ Features
@@ -163,6 +192,7 @@ while True:
 - **Health Checks** - Monitor server availability
 - **Configurable Timeouts** - Control request timeouts for reliability
 - **Multiple Queues** - Support for named queues on the same server
+- **Receive Filters** - `delete_after_receive` and `only_new` controls for flexible consumption
 
 ### 🛠️ Developer Experience
 - **Simple API** - Intuitive interface for quick integration
@@ -209,7 +239,7 @@ PyQueue(
 
 - `add_message(message, item_id=None)` - Add a message to the queue
 - `get_messages()` - Get all messages from the queue
-- `receive_messages(max_messages=10, visibility_timeout=30)` - Receive messages (SQS-style)
+- `receive_messages(max_messages=10, visibility_timeout=30, delete_after_receive=False, only_new=False)` - Receive messages (SQS-style) with optional auto-delete and unseen filters
 - `delete_message(receipt_handle)` - Delete a message using receipt handle
 - `remove_message(item_id)` - Remove a message by ID
 - `update_message(item_id, new_message)` - Update an existing message
