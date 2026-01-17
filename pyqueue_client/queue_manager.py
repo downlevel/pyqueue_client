@@ -102,6 +102,22 @@ class PyQueue:
         """Checks if a message exists in the queue"""
         return self.get_message(item_id) is not None
     
+    def check_existence(self, item_ids: List[str]) -> List[str]:
+        """Check which messages from the list exist in the queue"""
+        if self.queue_type == "remote":
+            return self.remote_client.check_existence(item_ids)
+        
+        # Local queue implementation
+        existing_ids = []
+        messages = self.get_messages()
+        message_ids_set = {item["id"] for item in messages}
+        
+        for item_id in item_ids:
+            if item_id in message_ids_set:
+                existing_ids.append(item_id)
+        
+        return existing_ids
+    
     def receive_messages(self, max_messages=10, visibility_timeout=30, delete_after_receive=False, only_new=False):
         """
         Receive messages from the queue (SQS-style)

@@ -24,3 +24,7 @@ print(messages)
 message_id = messages[0]['id']
 message = notifier.get_message(item_id=message_id)
 print(message)
+
+all_ids = ["5d74f678523b964d5b9f8898f96e75c0","8a319434dbc60580e8f50559c5d6801c"]
+existing_ids = notifier.check_existence(all_ids)
+print(existing_ids)
