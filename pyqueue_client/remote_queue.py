@@ -89,6 +89,20 @@ class RemoteQueueClient:
         """Checks if a message exists in the queue"""
         return self.get_message(item_id) is not None
     
+    def check_existence(self, item_ids: List[str]) -> List[str]:
+        """
+        Checks a list of IDs and returns the ones that exist.
+        Much faster than calling has_message() in a loop.
+        """
+        endpoint = "/messages/check-existence"
+        payload = {"message_ids": item_ids}
+        try:
+            response = self._make_request("POST", endpoint, payload)
+            return response.get("existing_ids", [])
+        except Exception as e:
+            self.logger.error(f"Failed to check existence for {len(item_ids)} items: {e}")
+            return []
+    
     def receive_messages(self, max_messages: int = 10, visibility_timeout: int = 30, delete_after_receive: bool = False, only_new: bool = False) -> List[Dict]:
         """
         Receive messages from the queue (like SQS ReceiveMessage)
