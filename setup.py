@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="pyqueue-client",
-    version="1.1.7",
+    version="1.1.8",
     packages=find_packages(),
     install_requires=[
         "requests>=2.25.0",
