@@ -76,6 +76,19 @@ class RemoteQueueClient:
         response = self._make_request("GET", endpoint)
         return response.get("messages", [])
     
+    def get_message(self, item_id):
+        """Returns a specific message by ID if it exists, otherwise None"""
+        endpoint = f"/message/{item_id}"
+        try:
+            response = self._make_request("GET", endpoint)
+            return response
+        except ConnectionError:
+            return None
+
+    def has_message(self, item_id):
+        """Checks if a message exists in the queue"""
+        return self.get_message(item_id) is not None
+    
     def receive_messages(self, max_messages: int = 10, visibility_timeout: int = 30, delete_after_receive: bool = False, only_new: bool = False) -> List[Dict]:
         """
         Receive messages from the queue (like SQS ReceiveMessage)

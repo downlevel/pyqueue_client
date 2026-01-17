@@ -86,6 +86,21 @@ class PyQueue:
         # Local queue implementation
         with open(self.queue_file, "r") as f:
             return json.load(f)
+
+    def get_message(self, item_id):
+        """Returns a specific message by ID if it exists, otherwise None"""
+        # Get all messages (works for both local and remote)
+        messages = self.get_messages()
+        
+        # Find the specific message
+        for item in messages:
+            if item.get("id") == item_id:
+                return item
+        return None
+
+    def has_message(self, item_id):
+        """Checks if a message exists in the queue"""
+        return self.get_message(item_id) is not None
     
     def receive_messages(self, max_messages=10, visibility_timeout=30, delete_after_receive=False, only_new=False):
         """

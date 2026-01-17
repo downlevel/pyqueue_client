@@ -9,3 +9,8 @@ notifier.add_message(message={
 
 messages = notifier.get_messages()
 print(messages)
+
+#test get message by id
+message_id = messages['messages'][0]['id']
+message = notifier.get_message_by_id(message_id=message_id)
+print(message)
