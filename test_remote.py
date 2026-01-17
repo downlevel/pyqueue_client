@@ -22,5 +22,5 @@ print(messages)
 
 #test get message by id
 message_id = messages[0]['id']
-message = notifier.get_message_by_id(item_id=message_id)
+message = notifier.get_message(item_id=message_id)
 print(message)
