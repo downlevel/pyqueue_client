@@ -172,3 +172,4 @@ cython_debug/
 
 # Test queue files
 test_queue.json
+demo_queue.json
