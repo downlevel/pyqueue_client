@@ -446,18 +446,27 @@ queue = PyQueue(queue_type="local")
 
 ## Migration Guide
 
-### Upgrading from v1.1.x to v1.2.x
+### Upgrading to v1.3.0
 
-Version 1.2.x adds full SQS-style features to local queues. **Your existing code will continue to work** - backward compatibility is guaranteed.
+Version 1.3.0 adds full SQS-style features to local queues:
 
-**What's New:**
 - Visibility timeout support for local queues
 - Receipt handles for safe message deletion
 - Message tracking (receive_count, first_received_at)
 - Enhanced queue statistics
+- `only_new` now works for local queues too
 
-**Breaking Changes:**
-- None! Old messages are automatically upgraded when read.
+Old messages in an existing queue file are upgraded automatically when read.
+
+**Breaking changes for local queues** (remote queues are unchanged):
+
+- `receive_messages()` now returns the received-message format: the message ID is under
+  `Id` (not `id`), and each message has a `ReceiptHandle`. Code that reads `msg["id"]` must
+  switch to `msg["Id"]`.
+- `delete_message(receipt_handle)` now expects a receipt handle from `receive_messages()`.
+  To delete by message ID, use `remove_message(item_id)`.
+- `receive_messages()` without `delete_after_receive=True` hides the returned messages for
+  `visibility_timeout` seconds: delete them once processed, or they come back after the timeout.
 
 **Recommended Changes:**
 
