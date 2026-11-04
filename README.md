@@ -2,6 +2,7 @@
 
 A Python library for managing message queues with **full AWS SQS-style features** for both local JSON files and remote PyQueue servers. Features include visibility timeouts, receipt handles, message tracking, and flexible consumption patterns.
 
+[![PyPI](https://img.shields.io/pypi/v/pyqueue-client.svg)](https://pypi.org/project/pyqueue-client/)
 [![Python Version](https://img.shields.io/badge/python-3.6%2B-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -506,8 +507,8 @@ The library includes comprehensive tests:
 ## Requirements
 
 - Python >= 3.6
-- requests >= 2.31.0
-- urllib3 >= 2.0.0
+- requests >= 2.25.0
+- urllib3 >= 1.26.0
 
 ## Use Cases
 
@@ -554,6 +555,16 @@ Use **remote queues** for:
 - Check API key is valid
 - Increase timeout parameter if network is slow
 - Use `health_check()` to verify server status
+
+## PyQueue ecosystem
+
+| Project | What it is |
+|---|---|
+| [pyqueue-server](https://github.com/downlevel/pyqueue-server) | Self-hosted queue server with an AWS SQS-style REST API (FastAPI, SQLite or JSON) |
+| [pyqueue_client](https://github.com/downlevel/pyqueue_client) | Python client library (`pip install pyqueue-client`) for a local JSON queue or a remote server |
+| [pyqueue-ui](https://github.com/downlevel/pyqueue-ui) | Web dashboard to browse queues and messages |
+| [pynotiq](https://github.com/downlevel/pynotiq) | Worker that delivers queue messages as Telegram notifications |
+| [keystorebot](https://github.com/downlevel/keystorebot) | Telegram bot that stores key-value pairs in a PyQueue queue |
 
 ## License
 
